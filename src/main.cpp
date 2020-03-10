@@ -78,10 +78,23 @@ int main(int argc, char **argv)
     int num_lines = 0;
     while (!(shared_data->all_terminated))
     {
+		int startTime = 0;
+		if(startTime == 0){
+			startTime = currentTime();
+		}
+		
         // clear output from previous iteration
         clearOutput(num_lines);
 
         // start new processes at their appropriate start time
+		for(int i = 0; i < processes.size(); i ++){
+			if(processes.get(i)->getState() == Process::State::NotStarted && processes.get(i)->startTime < currentTime() - startTime){
+//This line isn't working, basically trying to check every process and see if it nees to be started
+			}
+		}
+
+
+
 
         // determine when an I/O burst finishes and put the process back in the ready queue
 
