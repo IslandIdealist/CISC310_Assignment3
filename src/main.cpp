@@ -9,8 +9,7 @@
 #include <unistd.h>
 #include "configreader.h"
 #include "process.h"
-
-//This is a github test change
+#include <time.h>
 
 // Shared data for all cores
 typedef struct SchedulerData {
@@ -26,6 +25,9 @@ typedef struct SchedulerData {
 void coreRunProcesses(uint8_t core_id, SchedulerData *data);
 int printProcessOutput(std::vector<Process*>& processes, std::mutex& mutex);
 void clearOutput(int num_lines);
+#include<iterator>
+
+
 uint32_t currentTime();
 std::string processStateToString(Process::State state);
 
@@ -76,22 +78,30 @@ int main(int argc, char **argv)
         schedule_threads[i] = std::thread(coreRunProcesses, i, shared_data);
     }
 
+	unsigned int startTime = currentTime();
+
     // main thread work goes here:
     int num_lines = 0;
     while (!(shared_data->all_terminated))
     {
-		int startTime = 0;
-		if(startTime == 0){
-			startTime = currentTime();
-		}
-		
+
+		std::vector<Process*>::iterator itr;
+
+
+		printf("Size of procces is %ld\n", processes.size());
         // clear output from previous iteration
         clearOutput(num_lines);
 
         // start new processes at their appropriate start time
-		for(int i = 0; i < processes.size(); i ++){
-			if(processes.get(i)->getState() == Process::State::NotStarted && processes.get(i)->startTime < currentTime() - startTime){
-//This line isn't working, basically trying to check every process and see if it nees to be started
+		printf("StartTime is %u,\n", startTime);
+		printf("CurrTime is  %u,\n", currentTime());
+		for(itr = processes.begin(); itr < processes.end(); itr++){
+			if((*itr)->getState() == Process::State::NotStarted && (*itr)->getStartTime() + startTime < currentTime()){
+
+				(*itr)->setState(Process::State::Ready, currentTime());
+				shared_data->ready_queue.push_back(*itr);
+				
+				printf("Process added to ready queue.\n");
 			}
 		}
 
@@ -150,7 +160,7 @@ void coreRunProcesses(uint8_t core_id, SchedulerData *shared_data)
     //  * Repeat until all processes in terminated state
 
 	//currentProcess = new std::Process();	
-	currentProcess = *shared_data.ready_queue.pop_front(); //pop the top item off the queue
+/*	currentProcess = *shared_data.ready_queue.pop_front(); //pop the top item off the queue
 	
 	auto start = currentTime(); //start the timing
 	while( processChecker == false )
@@ -176,7 +186,7 @@ void coreRunProcesses(uint8_t core_id, SchedulerData *shared_data)
 		
 		
 		
-	}
+	} */
 		
 
 	
