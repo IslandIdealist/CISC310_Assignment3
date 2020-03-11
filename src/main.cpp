@@ -148,6 +148,38 @@ void coreRunProcesses(uint8_t core_id, SchedulerData *shared_data)
     //     - Ready queue if time slice elapsed or process was preempted
     //  - Wait context switching time
     //  * Repeat until all processes in terminated state
+
+	//currentProcess = new std::Process();	
+	currentProcess = *shared_data.ready_queue.pop_front(); //pop the top item off the queue
+	
+	auto start = currentTime(); //start the timing
+	while( processChecker == false )
+	{
+		if( *shared_data.ready_queue.end().pid < currentProcess.pid ) //check if the top of the queue has a higher priorty than the current running process
+		{
+				auto stop = currentTime(); //stop the clock
+				auto timePassed = (stop - start); //generate the time duration
+				currentProcess.wait_time = timePassed; //sets the amount of time that has been completed so far
+				currentProcess.state = State::Ready;  //sets the current process back to ready
+				*shared_data.ready_queue.insert(currentProcess); //inserts the current process back into the queue
+				currentProcess = *shared_data.ready_queue.pop_front(); //pops the new "higher" priority process off the stack
+			
+		}
+		
+		if( currentProcess.burst_times[currentProccess.current_burst] == currentProcess.wait_time ) //checks to see if the process has completed
+		{
+			
+			currentProcess.State = State::IO; //sets the current process to IO state
+			processChecker == true; //breaks out of the loop
+
+		}
+		
+		
+		
+	}
+		
+
+	
 }
 
 int printProcessOutput(std::vector<Process*>& processes, std::mutex& mutex)
