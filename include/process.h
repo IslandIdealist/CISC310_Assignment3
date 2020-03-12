@@ -22,6 +22,7 @@ private:
     int32_t cpu_time;         // total time spent running on a CPU core
     int32_t remain_time;      // CPU time remaining until terminated
     uint32_t launch_time;     // actual time in ms (since epoch) that process was 'launched'
+	int32_t entry_time;		  // time that the process has spent in 'running' or 'io' state.
     // you are welcome to add other private data fields here (e.g. actual time process was put in 
     // ready queue or i/o queue)
 
@@ -38,7 +39,10 @@ public:
     double getWaitTime() const;
     double getCpuTime() const;
     double getRemainingTime() const;
+	double getEntryTime() const;
+	uint32_t getCurrBurst() const;
 
+	void incrementCurrBurst();
     void setState(State new_state, uint32_t current_time);
     void setCpuCore(int8_t core_num);
 

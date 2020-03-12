@@ -7,6 +7,7 @@ Process::Process(ProcessDetails details, uint32_t current_time)
     pid = details.pid;
     start_time = details.start_time;
     num_bursts = details.num_bursts;
+	entry_time = 0;
     current_burst = 0;
     burst_times = new uint32_t[num_bursts];
     for (i = 0; i < num_bursts; i++)
@@ -79,6 +80,22 @@ double Process::getRemainingTime() const
 {
     return (double)remain_time / 1000.0;
 }
+
+double Process::getEntryTime() const
+{
+	return (double)entry_time / 1000.0;
+}
+
+uint32_t Process::getCurrBurst() const
+{
+	return burst_times[current_burst];
+}
+
+void Process::incrementCurrBurst()
+{
+	current_burst = current_burst + 1;
+}
+
 
 void Process::setState(State new_state, uint32_t current_time)
 {

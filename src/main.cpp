@@ -10,6 +10,7 @@
 #include "configreader.h"
 #include "process.h"
 #include <time.h>
+#include <bits/stdc++.h>
 
 // Shared data for all cores
 typedef struct SchedulerData {
@@ -86,31 +87,39 @@ int main(int argc, char **argv)
     {
 
 		std::vector<Process*>::iterator itr;
-
-
-		printf("Size of procces is %ld\n", processes.size());
         // clear output from previous iteration
         clearOutput(num_lines);
 
         // start new processes at their appropriate start time
-		printf("StartTime is %u,\n", startTime);
-		printf("CurrTime is  %u,\n", currentTime());
-		for(itr = processes.begin(); itr < processes.end(); itr++){
-			if((*itr)->getState() == Process::State::NotStarted && (*itr)->getStartTime() + startTime < currentTime()){
 
-				(*itr)->setState(Process::State::Ready, currentTime());
-				shared_data->ready_queue.push_back(*itr);
+		for(itr = processes.begin(); itr < processes.end(); itr++){
+			if((*itr)->getState() == Process::State::NotStarted && (*itr)->getStartTime() + startTime < currentTime()){ //Is process not started and is it time to start it?
+
+				(*itr)->setState(Process::State::Ready, currentTime()); //Set state to ready
+				shared_data->ready_queue.push_back(*itr); //Put back on ready queue
 				
 				printf("Process added to ready queue.\n");
 			}
 		}
 
-
-
-
         // determine when an I/O burst finishes and put the process back in the ready queue
 
+		for(itr = processes.begin(); itr < processes.end(); itr++){
+			if((*itr)->getState() == Process::State::IO && (*itr)->getCurrBurst()+ (*itr)->getEntryTime() < currentTime()){ //Is process in I/O and has elapsed time passed?
+
+				(*itr)->setState(Process::State::Ready, currentTime()); //Set state back to ready
+				(*itr)->incrementCurrBurst(); //Move to next index of bursts
+				shared_data->ready_queue.push_back(*itr); //Put back on ready queue
+
+				printf("Process I/O burst done; added back to ready queue.\n");
+			}
+		}
+
         // sort the ready queue (if needed - based on scheduling algorithm)
+
+		//sort(processes.begin(), processes.end(), SjfComparator operator;
+		/*Stopping point*/
+
 
         // determine if all processes are in the terminated state
 
@@ -160,6 +169,14 @@ void coreRunProcesses(uint8_t core_id, SchedulerData *shared_data)
     //  * Repeat until all processes in terminated state
 
 	//currentProcess = new std::Process();	
+
+	/*
+		Need to increment current burst index after CPU calculation is done
+		When burst is done, make sure that the entry time is set to current time so that it can be later added back to ready queue.
+
+	*/
+
+
 /*	currentProcess = *shared_data.ready_queue.pop_front(); //pop the top item off the queue
 	
 	auto start = currentTime(); //start the timing
