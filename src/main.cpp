@@ -87,6 +87,7 @@ int main(int argc, char **argv)
     {
 
 		std::vector<Process*>::iterator itr;
+		std::vector<Process*>::iterator nestedItr;
         // clear output from previous iteration
         clearOutput(num_lines);
 
@@ -117,7 +118,14 @@ int main(int argc, char **argv)
 
         // sort the ready queue (if needed - based on scheduling algorithm)
 
-		//sort(processes.begin(), processes.end(), SjfComparator operator;
+		for(itr = processes.begin(); itr < processes.end(); itr++){
+			for(nestedItr = processes.begin(); nestedItr < processes.end(); nestedItr ++){
+
+				//if(SjfComparator::operator ()(*nestedItr, *(nestedItr+1)){
+				//This is where I finished up for the night.
+				//}		
+			}
+		}
 		/*Stopping point*/
 
 
